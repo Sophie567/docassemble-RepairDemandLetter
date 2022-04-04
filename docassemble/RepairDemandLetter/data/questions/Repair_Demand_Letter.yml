@@ -1,0 +1,338 @@
+---
+include:
+  - docassemble.AssemblyLine:al_package.yml
+  - docassemble.ALMassachusetts:al_massachusetts.yml
+---
+metadata:
+  title: |
+    Repair Demand Letter
+  short title: |
+    Repair Demand Letter
+  authors:
+    - Sofija Belajcic
+---
+mandatory: True
+comment: |
+  This contains metadata that will not be overwritten if this YAML file is included in another
+  file. Each file gets its own key in the interview_metadata dictionary.
+  Most keys are not currently used at runtime, other than "allowed courts".
+code: |
+  interview_metadata
+  if not defined("interview_metadata['Repair_Demand_Letter']"):
+    interview_metadata.initializeObject("Repair_Demand_Letter")
+    interview_metadata["Repair_Demand_Letter"].update({
+      "al_weaver_version": "1.6.2",
+      "generated on": "2022-03-31",
+      "title": "Repair Demand Letter",
+      "short title": "Repair Demand Letter",
+      "description": "A letter of demand for relief under the Consumer Protection Act, Chapter 93A",
+      "original_form": "https://www.masslegalhelp.org/housing/lt1-form-10-repair-demand.pdf",
+      "allowed courts": [
+      ],
+      "categories": [
+      ],        
+      "logic block variable": "interview_order_Repair_Demand_Letter",
+      "attachment block variable": "Repair_Demand_Letter_attachment",
+      "typical role": "na",
+    })
+---
+code: |
+  interview_metadata['main_interview_key'] =  'Repair_Demand_Letter'
+---
+code: |
+  # This controls the default country and list of states in address field questions
+  AL_DEFAULT_COUNTRY = "US"
+---
+code: |
+  # This controls the default state in address field questions
+  AL_DEFAULT_STATE = "MA"
+---
+code: |
+  github_repo_name =  'docassemble-RepairDemandLetter'
+---
+code: |
+  interview_short_title = "Write a repair demand letter to your landlord"
+---
+code: |
+  al_form_type = 'letter'
+---
+objects:
+  - other_parties: ALPeopleList.using(ask_number=True,target_number=1)
+  - users: ALPeopleList.using(ask_number=True,target_number=1)
+---
+sections:
+  - review_Repair_Demand_Letter: Review your answers
+---
+#################### Interview order #####################
+comment: |
+  Controls order and branching logic for questions specific to this form
+id: interview_order_Repair_Demand_Letter
+code: |
+  # Set the allowed courts for this interview
+  allowed_courts = interview_metadata["Repair_Demand_Letter"]["allowed courts"]
+  nav.set_section('review_Repair_Demand_Letter')
+  user_role = 'na'
+  users.gather()
+  set_parts(subtitle=str(users))
+  users[0].address.address
+  other_parties.gather()
+  set_progress(20)
+  other_parties[0].address.address
+  time_frame
+  notification_date
+  set_progress(40)
+  letter_date
+  tenant_repair_issue_description
+  explanation
+  set_progress(60)
+  amount
+  interview_order_Repair_Demand_Letter = True
+---
+###################### Main order ######################
+comment: |
+  This block includes the logic for standalone interviews.
+  Delete mandatory: True to include in another interview
+mandatory: True
+code: |
+  al_intro_screen
+  Repair_Demand_Letter_intro
+  interview_order_Repair_Demand_Letter
+  signature_date
+  # Save anonymized interview statistics (customize the saved data below)
+  store_variables_snapshot(data={'zip': users[0].address.zip})
+  Repair_Demand_Letter_preview_question
+  basic_questions_signature_flow
+  users[0].signature
+  Repair_Demand_Letter_download
+---
+comment: |
+  This question is used to introduce your interview. Please customize
+id: Repair_Demand_Letter
+continue button field: Repair_Demand_Letter_intro
+question: |
+  Repair Demand Letter
+subquestion: |
+  This letter will help tenants obtain relief from their landlords for housing conditions that violate the sanitary code.
+  
+  Step 1. Answer the questions that will fill out your letter
+  Step 2. Review and sign the form
+  Step 3. Download or email the final form. You will need to deliver it on your own.
+---
+sets:
+  - other_parties[i].name.first
+  - other_parties[i].name.last
+  - other_parties[i].name.middle
+  - other_parties[i].name.suffix
+id: names of opposing parties
+question: |
+  What is the name of your landlord?
+fields:
+  - code: |
+      other_parties[i].name_fields(person_or_business='unsure')
+---
+sets: 
+  - other_parties[0].address.address
+  - other_parties[0].address.city
+id: What is the landlord s address
+question: |
+  What is the landlord's address?
+subquestion: |
+  State the full residential address of the landlord.
+fields:
+  - code: |
+      other_parties[0].address_fields(default_state="MA")
+---
+id: How long have you lived at the address
+question: |
+  How long have you lived at the address?
+subquestion: |
+  State how many months or years you have lived at the address.
+fields:
+  - "Time frame": time_frame
+---
+id: When did you first notify the landlord of the defective conditions
+question: |
+  When did you first notify the landlord of the defective conditions?
+fields:
+  - "Date of Notification": notification_date
+    datatype: date
+---
+id: When did you notify the landlord in writing
+question: |
+  When did you notify the landlord in writing?
+fields:
+  - "Date of Letter": letter_date
+    datatype: date
+---
+id: Describe the repairs that need to be fixed
+question: |
+  Describe the repairs that need to be fixed.
+subquestion: |
+  Tell the landlord specifically what needs to be repaired.
+fields:
+  - "Tenant repair issue description": tenant_repair_issue_description
+---
+id: How have the conditions affected you and your property
+question: |
+  How have the conditions affected you and your property?
+subquestion: |
+  Explain how the bad conditions have affected you and/or caused any property loss or additional expenses
+fields:
+  - "Explanation": explanation
+---
+id: How much relief would you like the landlord to give you
+question: |
+  How much relief would you like the landlord to give you?
+subquestion: |
+  State in dollars the reasonable offer amount you wish the landlord to make you.
+fields:
+  - "Amount": amount
+    datatype: currency
+    min: 0
+---
+id: preview Repair_Demand_Letter
+question: |
+  Preview your form before you sign it
+subquestion: |
+  Here is a preview of the form you will sign on the next page.   
+  
+  ${ al_recipient_bundle.as_pdf(key='preview') }
+
+  Click the image to open it in a new tab. Click the "Make changes" button
+  to edit your answers.
+
+  ${ action_button_html(url_action('review_Repair_Demand_Letter'), label='Make changes', color='info') }
+  
+  Remember to come back to this window to continue and sign your form.
+continue button field: Repair_Demand_Letter_preview_question    
+---
+code: |
+  signature_fields = ['users[0].signature']
+---
+id: Repair Demand Letter review screen
+event: review_Repair_Demand_Letter
+question: |
+  Review your answers
+review:
+  - Edit: other_parties.revisit
+    button: |
+      **Other parties**
+
+      % for item in other_parties:
+        * ${ item }
+      % endfor
+  - Edit: explanation
+    button: |
+      **Explanation**:
+      ${ explanation }
+  - Edit: notification_date
+    button: |
+      **Date of Notification**:
+      ${ notification_date }
+  - Edit: tenant_repair_issue_description
+    button: |
+      **Tenant repair issue description**:
+      ${ tenant_repair_issue_description }
+  - Edit: amount
+    button: |
+      **Amount**:
+      ${ currency(amount) }
+  - Edit: time_frame
+    button: |
+      **Time frame**:
+      ${ time_frame }
+  - Edit: letter_date
+    button: |
+      **Date of Letter**:
+      ${ letter_date }
+  - Edit: users.revisit
+    button: |
+      **Users**
+
+      % for item in users:
+        * ${ item }
+      % endfor
+---
+continue button field: other_parties.revisit
+question: |
+  Edit other_parties
+subquestion: |
+  ${ other_parties.table }
+
+  ${ other_parties.add_action() }
+---
+table: other_parties.table
+rows: other_parties
+columns:
+  - Address: |
+      row_item.address.block() if defined("row_item.address.address") else ""
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+edit:
+  - address.address
+  - name.first
+confirm: True
+
+---
+continue button field: users.revisit
+question: |
+  Edit users
+subquestion: |
+  ${ users.table }
+
+  ${ users.add_action() }
+---
+table: users.table
+rows: users
+columns:
+  - Signature: |
+      row_item.signature if defined("row_item.signature") else ""
+  - Address: |
+      row_item.address.block() if defined("row_item.address.address") else ""
+  - Name: |
+      row_item.name.full() if defined("row_item.name.first") else ""
+edit:
+  - signature
+  - address.address
+  - name.first
+confirm: True
+
+---
+id: download Repair_Demand_Letter
+event: Repair_Demand_Letter_download
+question: |
+  Your form is ready to download.
+subquestion: |
+  Thank you ${users}. Your form is ready to download and deliver.
+  
+  View, download and send your form below. Click the "Make changes" button to fix any mistakes.
+
+  ${ action_button_html(url_action('review_Repair_Demand_Letter'), label='Make changes', color='info') }
+  
+  
+  ${ al_user_bundle.download_list_html() }
+  
+
+  ${ al_user_bundle.send_button_html(show_editable_checkbox=True) }
+
+progress: 100
+---
+objects:
+  - Repair_Demand_Letter_post_interview_instructions: ALDocument.using(title="Instructions", filename="Repair_Demand_Letter_next_steps.docx", enabled=True, has_addendum=False, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - Repair_Demand_Letter_attachment: ALDocument.using(title="Repair Demand Letter", filename="Repair_Demand_Letter.docx", enabled=True, has_addendum=False, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+---
+objects:
+  - al_user_bundle: ALDocumentBundle.using(elements=[Repair_Demand_Letter_post_interview_instructions,Repair_Demand_Letter_attachment], filename="Repair_Demand_Letter.docx_package.pdf", title="All forms to download for your records", enabled=True)
+  - al_recipient_bundle: ALDocumentBundle.using(elements=[Repair_Demand_Letter_attachment], filename="Repair_Demand_Letter.docx_package.pdf", title="All forms to download for your records", enabled=True)
+---
+attachments:
+  - name: Repair Demand Letter post interview instructions
+    filename: Post-interview-instructions     
+    variable name: Repair_Demand_Letter_post_interview_instructions[i]        
+    skip undefined: True
+    docx template file: Repair_Demand_Letter_next_steps.docx
+  - name: Repair Demand Letter attachment
+    filename: Repair_Demand_Letter.docx     
+    variable name: Repair_Demand_Letter_attachment[i]        
+    skip undefined: True
+    docx template file: Repair_Demand_Letter.docx
