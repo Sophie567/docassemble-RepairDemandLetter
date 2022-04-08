@@ -81,7 +81,8 @@ code: |
   time_frame
   notification_date
   set_progress(40)
-  letter_date
+  if written_notification == True:
+     letter_date
   tenant_repair_issue_description
   explanation
   set_progress(60)
@@ -157,6 +158,11 @@ fields:
   - "Date of Notification": notification_date
     datatype: date
 ---
+id: Did you notify the landlord in writing
+question: |
+  Did you notify the landlord in writing?
+yesno: written_notification
+---
 id: When did you notify the landlord in writing
 question: |
   When did you notify the landlord in writing?
@@ -170,7 +176,9 @@ question: |
 subquestion: |
   Tell the landlord specifically what needs to be repaired.
 fields:
-  - "Tenant repair issue description": tenant_repair_issue_description
+  -  "Tenant repair issue description": tenant_repair_issue_description
+     input type: area
+     rows: 3
 ---
 id: How have the conditions affected you and your property
 question: |
@@ -179,6 +187,8 @@ subquestion: |
   Explain how the bad conditions have affected you and/or caused any property loss or additional expenses
 fields:
   - "Explanation": explanation
+    input type: area
+    rows: 3
 ---
 id: How much relief would you like the landlord to give you
 question: |
