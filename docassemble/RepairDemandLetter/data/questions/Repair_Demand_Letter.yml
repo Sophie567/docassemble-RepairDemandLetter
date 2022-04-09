@@ -84,7 +84,7 @@ code: |
   if written_notification == True:
      letter_date
   tenant_repair_issue_description
-  explanation
+  effect_of_conditions
   set_progress(60)
   amount
   interview_order_Repair_Demand_Letter = True
@@ -150,10 +150,11 @@ subquestion: |
   State how many months or years you have lived at the address.
 fields:
   - "Time frame": time_frame
+    hint: E.g. 2 years
 ---
-id: When did you first notify the landlord of the defective conditions
+id: When did you first notify the landlord of the bad conditions
 question: |
-  When did you first notify the landlord of the defective conditions?
+  When did you first notify the landlord of the bad conditions?
 fields:
   - "Date of Notification": notification_date
     datatype: date
@@ -170,31 +171,31 @@ fields:
   - "Date of Letter": letter_date
     datatype: date
 ---
-id: Describe the repairs that need to be fixed
+id: Describe the repairs
 question: |
-  Describe the repairs that need to be fixed.
-subquestion: |
-  Tell the landlord specifically what needs to be repaired.
+  Describe the repairs
 fields:
-  -  "Tenant repair issue description": tenant_repair_issue_description
+  -  "State specifically what needs to be fixed": tenant_repair_issue_description
+     label above field: True
      input type: area
      rows: 3
+     hint: E.g. broken roof tiles, blocked toilet, and damaged window screens
 ---
 id: How have the conditions affected you and your property
 question: |
   How have the conditions affected you and your property?
-subquestion: |
-  Explain how the bad conditions have affected you and/or caused any property loss or additional expenses
 fields:
-  - "Explanation": explanation
+  - "Explain how the bad conditions have affected you and/or caused any property loss or additional expenses": effect_of_conditions
+    label above field: True
     input type: area
     rows: 3
+    hint: E.g. The damaged window screens make it difficult to open and close the windows leading to poor ventilation in the house.
 ---
-id: How much relief would you like the landlord to give you
+id: How much compensation would you like to claim from the landlord?
 question: |
-  How much relief would you like the landlord to give you?
+  How much compensation would you like to claim from the landlord?
 subquestion: |
-  State in dollars the reasonable offer amount you wish the landlord to make you.
+  State in dollars the compensation amount.
 fields:
   - "Amount": amount
     datatype: currency
@@ -231,10 +232,10 @@ review:
       % for item in other_parties:
         * ${ item }
       % endfor
-  - Edit: explanation
+  - Edit: effect_of_conditions
     button: |
-      **Explanation**:
-      ${ explanation }
+      **Effect of Conditions**:
+      ${ effect_of_conditions }
   - Edit: notification_date
     button: |
       **Date of Notification**:
@@ -343,6 +344,6 @@ attachments:
     docx template file: Repair_Demand_Letter_next_steps.docx
   - name: Repair Demand Letter attachment
     filename: Repair_Demand_Letter.docx     
-    variable name: Repair_Demand_Letter_attachment[i]        
+    variable name: Repair_Demand_Letter_attachment[i]
     skip undefined: True
     docx template file: Repair_Demand_Letter.docx
